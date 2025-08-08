@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>買い物お手伝いアプリ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+
+<body>
+    <h1><i class="fa-solid fa-shopping-cart" style="color:#2a7ae2;"></i> 買い物リスト</h1>
+
+    <p>
+        <a href="{{ url_for('setup') }}">
+            <i class="fa-solid fa-gear"></i> 事前用意リスト
+        </a>
+    </p>
+
+    <!-- 予算切替 -->
+    <div id="budget-toggle-container">
+        <button id="budget-toggle-btn" aria-label="予算設定切替"
+            style="font-size:2rem; display:flex; align-items:center; gap:0.3rem;">
+            <i id="wallet-icon" class="fa-solid fa-wallet"></i>
+            <i id="money-icon" class="fa-solid fa-money-bill-wave" style="display:none; color:#27ae60;"></i>
+        </button>
+    </div>
+
+
+    <div id="budget-setting" style="display:none;">
+        <label for="budget"><i class="fa-solid fa-coins" style="color:#f39c12;"></i> 予算設定（円）：</label>
+        <input type="number" id="budget" placeholder="予算を入力" />
+        <button onclick="setBudget()"><i class="fa-solid fa-check"></i> 設定</button>
+        <p id="budget-message"></p>
+    </div>
+
+    <!-- 商品登録フォーム -->
+    <section id="product-entry" class="section-box">
+        <h2><i class="fa-solid fa-plus-circle" style="color:#27ae60;"></i> 商品登録</h2>
+        <div id="form">
+            <input type="text" id="name" placeholder="商品名" lang="ja" inputmode="text" />
+            <input type="number" id="price" placeholder="価格" />
+            <input type="number" id="quantity" placeholder="数量" value="1" min="1" />
+            <button id="form-add-btn"><i class="fa-solid fa-cart-plus"></i> 追加</button>
+        </div>
+    </section>
+
+    <!-- 事前用意リスト -->
+    <section id="preset-section" class="section-box">
+        <h2><i class="fa-solid fa-list-check" style="color:#2980b9;"></i> 事前用意リスト</h2>
+        <div id="preset-list"></div>
+    </section>
+
+    <!-- 買い物リストと並び替え -->
+    <section id="shopping-list-section" class="section-box">
+        <div id="shopping-list-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <h2><i class="fa-solid fa-list" style="color:#34495e;"></i> 買い物リスト</h2>
+            <div id="sort" style="font-weight:bold; font-size:0.9rem;">
+                <i class="fa-solid fa-sort"></i> 並び替え：
+                <select id="sortOrder" onchange="sortItems()">
+                    <option value="added">追加順</option>
+                    <option value="priceAsc">合計金額の昇順</option>
+                    <option value="priceDesc">合計金額の降順</option>
+                    <option value="unitPriceAsc">単価の昇順</option>
+                    <option value="unitPriceDesc">単価の降順</option>
+                </select>
+            </div>
+        </div>
+        <ul id="list"></ul>
+        <p>
+            合計: <span id="total">0</span> 円
+            <span id="remaining" style="margin-left:1rem;"></span>
+        </p>
+    </section>
+
+    <button id="end-shopping-btn" style="background:red; color:white;">買い物終了</button>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

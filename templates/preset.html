@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>プリセットリスト編集</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+
+<body>
+    <h1><i class="fa-solid fa-pen-to-square"></i> プリセットリスト編集</h1>
+
+    <p>
+        <a href="{{ url_for('index') }}">
+            <i class="fa-solid fa-arrow-left"></i> 買い物リストに戻る
+        </a>
+    </p>
+
+    <div class="preset-form">
+        <input type="text" id="new-preset-name" placeholder="新しい商品名を入力" lang="ja" inputmode="text" />
+        <input type="number" id="new-preset-quantity" min="1" value="1" style="width:70px;" />
+        <button id="preset-add-btn"><i class="fa-solid fa-plus"></i> 追加</button>
+        <button id="preset-reset-btn" style="margin-left:10px; background-color:#f88;">
+            <i class="fa-solid fa-trash-can"></i> 全削除
+        </button>
+    </div>
+
+    <ul id="preset-edit-list"></ul>
+
+    <script>
+        const STORAGE_KEY = "myPresetItems";
+
+        function getPresetItems() {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        }
+
+        function savePresetItems(items) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+        }
+
+        function renderPresetList() {
+            const list = document.getElementById("preset-edit-list");
+            list.innerHTML = "";
+            const items = getPresetItems();
+
+            items.forEach(({ name, quantity }, index) => {
+                const li = document.createElement("li");
+
+                li.textContent = `${name}（個数: ${quantity}） `;
+
+                const delBtn = document.createElement("button");
+                delBtn.innerHTML = `<i class="fa-solid fa-xmark"></i> 削除`;
+                delBtn.onclick = () => {
+                    const currentItems = getPresetItems();
+                    currentItems.splice(index, 1);
+                    savePresetItems(currentItems);
+                    renderPresetList();
+                };
+
+                li.appendChild(delBtn);
+                list.appendChild(li);
+            });
+        }
+
+        document.getElementById("preset-add-btn").onclick = () => {
+            const nameInput = document.getElementById("new-preset-name");
+            const quantityInput = document.getElementById("new-preset-quantity");
+            const name = nameInput.value.trim();
+            const quantity = Number(quantityInput.value);
+
+            if (!name) {
+                alert("商品名を入力してください。");
+                return;
+            }
+            if (!quantity || quantity < 1) {
+                alert("個数は1以上の数字を入力してください。");
+                return;
+            }
+
+            const items = getPresetItems();
+            if (items.some(item => item.name === name)) {
+                alert("すでに同じ名前の商品が存在します。");
+                return;
+            }
+
+            items.push({ name, quantity });
+            savePresetItems(items);
+            renderPresetList();
+            nameInput.value = "";
+            quantityInput.value = 1;
+        };
+
+        // 全削除ボタン
+        document.getElementById("preset-reset-btn").onclick = () => {
+            if (!confirm("本当にプリセットをすべて削除しますか？")) return;
+            localStorage.removeItem(STORAGE_KEY);
+            renderPresetList();
+        };
+
+        renderPresetList();
+    </script>
+
+</body>
+
+</html>
