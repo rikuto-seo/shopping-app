@@ -4,11 +4,19 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>買い物お手伝いアプリ</title>
+    <title>BuyList+</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
     <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <!-- ファビコン -->
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+
+    <!-- Apple Touch Icon (iOS用) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/icon-180.png') }}" />
+
+    <!-- Android用 アイコン -->
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='icons/icon-192.png') }}" />
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='icons/icon-512.png') }}" />
 </head>
 
 <body>
