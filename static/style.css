@@ -1,23 +1,26 @@
 /* ===== ベーススタイル ===== */
 body {
-    font-family: "Yu Gothic", "游ゴシック体", "Hiragino Kaku Gothic Pro", Meiryo, sans-serif;
+    font-family: "Inter", "Yu Gothic", "游ゴシック体", "Hiragino Kaku Gothic Pro", Meiryo, sans-serif;
     max-width: 500px;
     margin: auto;
     padding: 1.5rem;
-    background-color: #f0f4f8;
+    background: linear-gradient(180deg, #f8fafc, #eef2f7);
     color: #333;
+    line-height: 1.6;
 }
 
 /* ===== 見出し ===== */
 h1 {
     text-align: center;
     margin-bottom: 1rem;
-    color: #2c3e50;
+    color: #1f2d3d;
+    font-size: 1.8rem;
+    font-weight: 700;
 }
 h2 {
     color: #34495e;
     margin-top: 2rem;
-    border-bottom: 2px solid #2a7ae2;
+    border-bottom: 2px solid #4c9fff;
     padding-bottom: 0.3rem;
     font-weight: 700;
 }
@@ -25,26 +28,30 @@ h2 {
 /* ===== リンクボタン風 ===== */
 p a {
     display: inline-block;
-    padding: 0.4rem 1rem;
-    background-color: #2a7ae2;
+    padding: 0.6rem 1.2rem;
+    background-color: #4c9fff;
     color: white;
-    border-radius: 4px;
+    border-radius: 10px;
     text-decoration: none;
     font-weight: 600;
-    transition: background-color 0.3s;
+    transition: transform 0.15s ease, background-color 0.3s ease, box-shadow 0.2s ease;
 }
 p a:hover {
-    background-color: #1f5bb5;
+    background-color: #3c8de0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(76, 159, 255, 0.25);
 }
 
 /* ===== 入力フォーム共通 ===== */
 input {
     margin: 0.2rem 0.5rem 0.2rem 0;
-    padding: 0.5rem;
+    padding: 0.6rem;
     font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 1px solid #ccd6e0;
+    border-radius: 8px;
     box-sizing: border-box;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* 特定IDの幅指定 */
@@ -56,32 +63,35 @@ input#itemName {
 /* numberタイプのinput */
 input[type="number"] {
     width: 120px;
-    border: 1px solid #3498db;
-    border-radius: 4px;
-    padding: 0.4rem 0.5rem;
+    border: 1px solid #4c9fff;
+    border-radius: 8px;
+    padding: 0.6rem;
     font-size: 1rem;
 }
 
 /* 入力フォーム フォーカス時 */
 input:focus {
     outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    border-color: #4c9fff;
+    box-shadow: 0 0 6px rgba(76, 159, 255, 0.4);
 }
 
 /* ===== ボタン ===== */
 button {
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1.2rem;
     font-size: 1rem;
-    background-color: #3498db;
+    background-color: #4c9fff;
     border: none;
-    border-radius: 4px;
+    border-radius: 10px;
     color: white;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    font-weight: 600;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.3s ease;
 }
 button:hover {
-    background-color: #2980b9;
+    background-color: #3c8de0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(76, 159, 255, 0.25);
 }
 
 /* プリセットリスト内 削除ボタン */
@@ -89,33 +99,35 @@ button:hover {
     margin: 0.25rem 0.4rem;
     padding: 0.4rem 0.8rem;
     font-size: 0.95rem;
-    border-radius: 6px;
-    border: 1px solid #3498db;
+    border-radius: 8px;
+    border: 1px solid #4c9fff;
     background-color: white;
-    color: #3498db;
+    color: #4c9fff;
     cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
+    transition: background-color 0.2s, color 0.2s, transform 0.15s ease;
 }
 #preset-list button:hover {
-    background-color: #3498db;
+    background-color: #4c9fff;
     color: white;
+    transform: translateY(-1px);
 }
 
 /* プリセットリスト編集用 削除ボタン */
 #preset-edit-list li button {
-    background-color: rgba(231, 76, 60, 0.1);
+    background-color: rgba(231, 76, 60, 0.08);
     color: #e74c3c;
     font-weight: 700;
     font-size: 1rem;
     padding: 0.3rem 0.7rem;
-    border-radius: 6px;
+    border-radius: 8px;
     border: 1px solid #e74c3c;
     cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 #preset-edit-list li button:hover {
     background-color: #e74c3c;
     color: white;
+    transform: translateY(-1px);
 }
 
 /* ===== リスト共通 ===== */
@@ -127,14 +139,15 @@ ul#preparedList {
 }
 ul#list li,
 ul#preparedList li {
-    padding: 0.5rem;
+    padding: 0.8rem 1rem;
     background-color: white;
     border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-bottom: 0.5rem;
+    border-radius: 10px;
+    margin-bottom: 0.6rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 ul#list li span:first-child {
     flex-grow: 1;
@@ -152,6 +165,7 @@ ul#preparedList li button {
     font-size: 1.2rem;
     cursor: pointer;
     padding: 0 0.3rem;
+    transition: color 0.2s ease;
 }
 ul#list li button:hover,
 ul#preparedList li button:hover {
@@ -169,9 +183,6 @@ ul#preparedList li button:hover {
     margin-bottom: 1rem;
 }
 
-#budget-setting {
-    gap: 0.5rem;
-}
 #budget-setting label {
     font-weight: bold;
     min-width: 100px;
@@ -180,21 +191,13 @@ ul#preparedList li button:hover {
     width: 120px;
 }
 
-.preset-form {
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: 1rem;
-    padding: 1rem 1rem;
-    border-radius: 8px;
-}
-
 /* 新規プリセット用入力欄 */
 #new-preset-name,
 #new-preset-quantity {
     font-size: 1.1rem;
     padding: 0.6rem 0.75rem;
-    border: 1px solid #999;
-    border-radius: 6px;
+    border: 1px solid #bbb;
+    border-radius: 8px;
     box-sizing: border-box;
     background-color: white;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -206,28 +209,30 @@ ul#preparedList li button:hover {
 }
 #new-preset-name:focus {
     outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
+    border-color: #4c9fff;
+    box-shadow: 0 0 8px rgba(76, 159, 255, 0.4);
 }
 
 /* プレースホルダー色 */
 #new-preset-name::placeholder {
-    color: #666;
+    color: #888;
 }
 
 /* 追加ボタン */
 #preset-add-btn {
-    padding: 0.5rem 1.2rem;
+    padding: 0.6rem 1.2rem;
     font-size: 1rem;
-    background-color: #3498db;
+    background-color: #4c9fff;
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.3s ease;
 }
 #preset-add-btn:hover {
-    background-color: #2980b9;
+    background-color: #3c8de0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(76, 159, 255, 0.25);
 }
 
 /* プリセットリスト本体 */
@@ -239,13 +244,13 @@ ul#preparedList li button:hover {
 #preset-edit-list li {
     background-color: white;
     border: 1px solid #ddd;
-    border-radius: 6px;
+    border-radius: 8px;
     margin-bottom: 0.6rem;
     padding: 0.6rem 1rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     font-size: 1rem;
 }
 
@@ -255,7 +260,7 @@ ul#preparedList li button:hover {
     align-items: center;
     justify-content: space-between;
     margin-top: 2rem;
-    border-bottom: 2px solid #2a7ae2;
+    border-bottom: 2px solid #4c9fff;
     padding-bottom: 0.3rem;
 }
 #preset-header h2 {
@@ -274,8 +279,8 @@ ul#preparedList li button:hover {
 #budget-toggle-btn {
     background-color: transparent;
     border: none;
-    color: #3498db;
-    font-size: 3rem;
+    color: #4c9fff;
+    font-size: 2.5rem;
     cursor: pointer;
     font-weight: 600;
     display: flex;
@@ -297,7 +302,7 @@ ul#preparedList li button:hover {
     margin-left: 0.3rem;
     padding: 0.25rem 0.4rem;
     font-size: 0.85rem;
-    border-radius: 4px;
+    border-radius: 6px;
     border: 1px solid #ccc;
 }
 
@@ -305,7 +310,7 @@ ul#preparedList li button:hover {
 #total {
     font-weight: bold;
     font-size: 1.4rem;
-    color: #2a7ae2;
+    color: #4c9fff;
 }
 #remaining {
     font-size: 0.9rem;
@@ -315,26 +320,19 @@ ul#preparedList li button:hover {
 
 /* ===== レスポンシブ ===== */
 @media (max-width: 480px) {
-    /* プリセットヘッダー縦並び */
     #preset-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
     }
-
-    /* ソートセレクトの左マージン解除 */
     #sort {
         margin-left: 0;
     }
-
-    /* div要素縦並び・幅調整 */
     div {
         flex-direction: column;
         align-items: stretch;
         gap: 0.8rem;
     }
-
-    /* 新規プリセット入力とボタンを幅100% */
     #preset-add-btn,
     #new-preset-name,
     #new-preset-quantity {
