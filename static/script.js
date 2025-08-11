@@ -320,7 +320,14 @@ window.onload = () => {
     updateList();
 
     const addBtn = document.getElementById("form-add-btn");
-    addBtn.onclick = addItemFromPreset;
+    addBtn.addEventListener("click", function () {
+        if (isPresetInputMode) {
+            addItemFromPreset();
+        } else {
+            addItem();
+        }
+    });
+
 };
 
 // 予算設定欄表示切替 + アイコン表示切替
@@ -376,3 +383,121 @@ document.getElementById("end-shopping-btn").addEventListener("click", () => {
 
     alert("買い物リストと予算をリセットしました。");
 });
+
+// 楽天APIの設定
+const APP_ID = "1044097768285505378"; // 楽天のアプリIDを入れてください
+const RECIPE_SEARCH_URL = "https://app.rakuten.co.jp/services/api/Recipe/CategoryRanking/20170426?format=json";
+
+// レシピ検索を行う関数
+async function searchRecipes(query) {
+    const url = `${RECIPE_SEARCH_URL}&applicationId=${APP_ID}&keyword=${encodeURIComponent(query)}&hits=10`;  // URL修正
+    console.log("リクエストURL:", url);  // URLを確認
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("レシピAPIエラー: " + res.statusText);
+
+    const data = await res.json();
+    console.log("レスポンスデータ:", data);  // レスポンスを確認
+
+    if (data && data.result && data.result.length > 0) {
+        return data.result;  // レシピの結果を返す
+    } else {
+        throw new Error("検索結果がありませんでした");
+    }
+}
+
+// 検索ボタンのクリックイベント
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("recipe-search-btn").addEventListener("click", async () => {
+        console.log("クリックされました");
+        const query = document.getElementById("recipe-search-input").value.trim();
+        if (query === "") {
+            alert("レシピ名を入力してください");
+            return;
+        }
+        try {
+            const recipes = await searchRecipes(query);
+            displayRecipeResults(recipes);
+        } catch (error) {
+            alert("検索エラー: " + error.message);
+        }
+    });
+});
+
+// 検索結果の表示
+function displayRecipeResults(recipes) {
+    const container = document.getElementById("recipe-results");
+    container.innerHTML = "";  // 結果をリセット
+
+    if (recipes.length === 0) {
+        container.innerHTML = "<p>検索結果がありませんでした。</p>";
+        return;
+    }
+
+    recipes.forEach(recipe => {
+        const item = document.createElement("div");
+        item.classList.add("recipe-item");
+        item.innerHTML = `<h3>${recipe.recipeTitle}</h3><p>レシピID: ${recipe.recipeId}</p>`;
+
+        // レシピをクリックで材料をプリセットリストに追加
+        item.onclick = async () => {
+            try {
+                await fetchRecipeIngredients(recipe.recipeId);
+                alert("材料をプリセットリストに追加しました！");
+            } catch (error) {
+                alert("エラーが発生しました: " + error.message);
+            }
+        };
+
+        container.appendChild(item);
+    });
+}
+
+// レシピIDを使って材料を取得する関数
+async function fetchRecipeIngredients(recipeId) {
+    const RECIPE_DETAIL_URL = "https://app.rakuten.co.jp/services/api/Recipe/RecipeDetail/20170426";
+    const url = `${RECIPE_DETAIL_URL}?applicationId=${APP_ID}&recipeId=${recipeId}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("レシピ詳細APIエラー");
+
+    const data = await res.json();
+
+    // レスポンスの内容をログ出力
+    console.log("レシピ詳細データ:", data);  
+
+    const ingredients = data.result.recipeMaterial || [];
+    console.log(ingredients);  // 材料をコンソールに表示（後で必要な処理を追加）
+
+    // ここでプリセットリストに追加する処理を記述
+    const presetItems = getPresetItems();
+    ingredients.forEach(ingredient => {
+        if (!presetItems.some(item => item.name === ingredient)) {
+            presetItems.push({ name: ingredient, quantity: 1 });
+        }
+    });
+
+    savePresetItems(presetItems);
+    renderPresetList();
+}
+
+// プリセットアイテムを取得する関数（ローカルストレージから）
+function getPresetItems() {
+    return JSON.parse(localStorage.getItem("myPresetItems") || "[]");
+}
+
+// プリセットアイテムを保存する関数（ローカルストレージに）
+function savePresetItems(items) {
+    localStorage.setItem("myPresetItems", JSON.stringify(items));
+}
+
+// プリセットリストを表示する関数
+function renderPresetList() {
+    const presetList = getPresetItems();
+    const presetListContainer = document.getElementById("preset-edit-list");
+    presetListContainer.innerHTML = "";
+
+    presetList.forEach(item => {
+        const listItem = document.createElement("li");
+        listItem.textContent = `${item.name} - ${item.quantity}`;
+        presetListContainer.appendChild(listItem);
+    });
+}
