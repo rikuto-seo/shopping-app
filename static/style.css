@@ -1,342 +1,364 @@
-/* ===== ベーススタイル ===== */
+/* --- リセットと基本設定 --- */
+* {
+  box-sizing: border-box;
+}
+
 body {
-    font-family: "Inter", "Yu Gothic", "游ゴシック体", "Hiragino Kaku Gothic Pro", Meiryo, sans-serif;
-    max-width: 500px;
-    margin: auto;
-    padding: 1.5rem;
-    background: linear-gradient(180deg, #f8fafc, #eef2f7);
-    color: #333;
-    line-height: 1.6;
+  margin: 0;
+  font-family: "Noto Sans JP", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #f9fafb;
+  color: #333;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
 }
 
-/* ===== 見出し ===== */
+/* --- 見出し --- */
+h1, h2 {
+  font-weight: 700;
+  color: #2a7ae2; /* メインブルー */
+  margin-bottom: 0.5em;
+}
+
 h1 {
-    text-align: center;
-    margin-bottom: 1rem;
-    color: #1f2d3d;
-    font-size: 1.8rem;
-    font-weight: 700;
+  font-size: 1.6rem;
+  padding: 1rem;
+  background: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  border-bottom: 1px solid #ddd;
 }
+
+h1 i {
+  color: #2a7ae2;
+}
+
 h2 {
-    color: #34495e;
-    margin-top: 2rem;
-    border-bottom: 2px solid #4c9fff;
-    padding-bottom: 0.3rem;
-    font-weight: 700;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  margin-top: 1.5rem;
+  margin-bottom: 0.7rem;
 }
 
-/* ===== リンクボタン風 ===== */
-p a {
-    display: inline-block;
-    padding: 0.6rem 1.2rem;
-    background-color: #4c9fff;
-    color: white;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: transform 0.15s ease, background-color 0.3s ease, box-shadow 0.2s ease;
-}
-p a:hover {
-    background-color: #3c8de0;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(76, 159, 255, 0.25);
+/* --- リンク --- */
+a {
+  color: #2a7ae2;
+  text-decoration: none;
+  font-weight: 600;
 }
 
-/* ===== 入力フォーム共通 ===== */
-input {
-    margin: 0.2rem 0.5rem 0.2rem 0;
-    padding: 0.6rem;
-    font-size: 1rem;
-    border: 1px solid #ccd6e0;
-    border-radius: 8px;
-    box-sizing: border-box;
-    background-color: #fff;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+a:hover,
+a:focus {
+  text-decoration: underline;
 }
 
-/* 特定IDの幅指定 */
-input#name,
-input#itemName {
-    width: 180px;
-}
-
-/* numberタイプのinput */
-input[type="number"] {
-    width: 120px;
-    border: 1px solid #4c9fff;
-    border-radius: 8px;
-    padding: 0.6rem;
-    font-size: 1rem;
-}
-
-/* 入力フォーム フォーカス時 */
-input:focus {
-    outline: none;
-    border-color: #4c9fff;
-    box-shadow: 0 0 6px rgba(76, 159, 255, 0.4);
-}
-
-/* ===== ボタン ===== */
+/* --- ボタン共通 --- */
 button {
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
-    background-color: #4c9fff;
-    border: none;
-    border-radius: 10px;
-    color: white;
-    cursor: pointer;
-    font-weight: 600;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.3s ease;
-}
-button:hover {
-    background-color: #3c8de0;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(76, 159, 255, 0.25);
-}
-
-/* プリセットリスト内 削除ボタン */
-#preset-list button {
-    margin: 0.25rem 0.4rem;
-    padding: 0.4rem 0.8rem;
-    font-size: 0.95rem;
-    border-radius: 8px;
-    border: 1px solid #4c9fff;
-    background-color: white;
-    color: #4c9fff;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s, transform 0.15s ease;
-}
-#preset-list button:hover {
-    background-color: #4c9fff;
-    color: white;
-    transform: translateY(-1px);
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.5em 1em;
+  font-size: 1rem;
+  user-select: none;
+  background-color: #2a7ae2;
+  color: white;
+  box-shadow: 0 2px 6px rgb(42 122 226 / 0.3);
 }
 
-/* プリセットリスト編集用 削除ボタン */
-#preset-edit-list li button {
-    background-color: rgba(231, 76, 60, 0.08);
-    color: #e74c3c;
-    font-weight: 700;
-    font-size: 1rem;
-    padding: 0.3rem 0.7rem;
-    border-radius: 8px;
-    border: 1px solid #e74c3c;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
-}
-#preset-edit-list li button:hover {
-    background-color: #e74c3c;
-    color: white;
-    transform: translateY(-1px);
+button:hover,
+button:focus {
+  background-color: #1f5ecb;
+  outline: none;
 }
 
-/* ===== リスト共通 ===== */
-ul#list,
-ul#preparedList {
-    list-style-type: none;
-    padding-left: 0;
-    margin-top: 1rem;
-}
-ul#list li,
-ul#preparedList li {
-    padding: 0.8rem 1rem;
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    margin-bottom: 0.6rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-ul#list li span:first-child {
-    flex-grow: 1;
-    min-width: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-ul#list li button,
-ul#preparedList li button {
-    background-color: transparent;
-    border: none;
-    color: #e74c3c;
-    font-weight: bold;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 0 0.3rem;
-    transition: color 0.2s ease;
-}
-ul#list li button:hover,
-ul#preparedList li button:hover {
-    color: #c0392b;
+button:active {
+  background-color: #1749a4;
 }
 
-/* ===== フォーム・レイアウト ===== */
-#form,
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+  box-shadow: none;
+}
+
+/* --- 特殊ボタン --- */
+#end-shopping-btn {
+  display: flex;
+  justify-content: center; /* 横方向中央 */
+  align-items: center;     /* 縦方向中央 */
+  height: 48px;            /* 高さは必要に応じて調整 */
+  width: 100%;
+  background-color: #e74c3c;
+  font-size: 1.1rem;
+  padding: 0;              /* paddingは高さを設定するので0でOK */
+  margin: 1.5rem 0 2rem;
+  box-shadow: 0 3px 8px rgba(231, 76, 60, 0.5);
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+
+#end-shopping-btn:hover,
+#end-shopping-btn:focus {
+  background-color: #c0392b;
+}
+
+/* 事前用意リストなどリンクボタンは青基調 */
+#budget-toggle-btn {
+  background: none;
+  border: none;
+  color: #2a7ae2;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0;
+}
+
+#budget-toggle-btn:hover,
+#budget-toggle-btn:focus {
+  color: #1f5ecb;
+  outline: none;
+}
+
+/* --- フォーム --- */
+input[type="text"],
+input[type="number"],
+select {
+  font-size: 1rem;
+  padding: 0.6em 0.8em;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s ease;
+  width: 100%;
+  max-width: 200px;
+  background-color: white;
+  color: #333;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+  border-color: #2a7ae2;
+  outline: none;
+  box-shadow: 0 0 6px rgba(42, 122, 226, 0.4);
+}
+
+/* 商品登録フォーム内は横並びで間隔をあける */
+#form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+#form > input {
+  flex: 1 1 120px;
+  min-width: 80px;
+}
+
+#form-add-btn {
+  flex: 0 0 auto;
+  background-color: #27ae60;
+  box-shadow: 0 2px 6px rgb(39 174 96 / 0.4);
+}
+
+#form-add-btn:hover,
+#form-add-btn:focus {
+  background-color: #1e8745;
+}
+
+/* 予算設定フォーム */
 #budget-setting {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: #fff9e6;
+  border: 1.5px solid #f39c12;
+  border-radius: 8px;
+  max-width: 360px;
 }
 
 #budget-setting label {
-    font-weight: bold;
-    min-width: 100px;
+  font-weight: 600;
+  color: #f39c12;
+  margin-right: 0.5rem;
 }
+
 #budget-setting input[type="number"] {
-    width: 120px;
+  max-width: 150px;
+  margin-right: 0.5rem;
 }
 
-/* 新規プリセット用入力欄 */
-#new-preset-name,
-#new-preset-quantity {
-    font-size: 1.1rem;
-    padding: 0.6rem 0.75rem;
-    border: 1px solid #bbb;
-    border-radius: 8px;
-    box-sizing: border-box;
-    background-color: white;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+#budget-setting button {
+  background-color: #f39c12;
+  box-shadow: 0 2px 6px rgb(243 156 18 / 0.5);
 }
 
-#new-preset-name {
-    width: 100%;
-    max-width: 350px;
-}
-#new-preset-name:focus {
-    outline: none;
-    border-color: #4c9fff;
-    box-shadow: 0 0 8px rgba(76, 159, 255, 0.4);
+#budget-setting button:hover,
+#budget-setting button:focus {
+  background-color: #d48806;
 }
 
-/* プレースホルダー色 */
-#new-preset-name::placeholder {
-    color: #888;
+#budget-message {
+  margin-top: 0.8rem;
+  font-weight: 600;
+  color: #d35400;
 }
 
-/* 追加ボタン */
-#preset-add-btn {
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
-    background-color: #4c9fff;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.3s ease;
-}
-#preset-add-btn:hover {
-    background-color: #3c8de0;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(76, 159, 255, 0.25);
+/* --- セクション共通 --- */
+.section-box {
+  background-color: white;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.05);
 }
 
-/* プリセットリスト本体 */
-#preset-edit-list {
-    list-style: none;
-    padding-left: 0;
-    margin-top: 0;
+/* --- リスト --- */
+ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
 }
+
+#list li,
+#preset-list div,
 #preset-edit-list li {
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin-bottom: 0.6rem;
-    padding: 0.6rem 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    font-size: 1rem;
+  background-color: #fefefe;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  padding: 0.6rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1rem;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.05);
 }
 
-/* プリセットリストのヘッダー */
-#preset-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 2rem;
-    border-bottom: 2px solid #4c9fff;
-    padding-bottom: 0.3rem;
-}
-#preset-header h2 {
-    margin: 0;
-    font-weight: 700;
-    color: #34495e;
-    font-size: 1.4rem;
+#preset-edit-list li button {
+  background-color: #e74c3c;
+  color: white;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(231, 76, 60, 0.6);
 }
 
-/* 予算切替ボタン */
-#budget-toggle-container {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 0.5rem;
-}
-#budget-toggle-btn {
-    background-color: transparent;
-    border: none;
-    color: #4c9fff;
-    font-size: 2.5rem;
-    cursor: pointer;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0;
-    transition: color 0.3s ease;
-}
-#budget-toggle-btn:hover {
-    color: #054875;
+#preset-edit-list li button:hover,
+#preset-edit-list li button:focus {
+  background-color: #c0392b;
+  outline: none;
 }
 
-/* ソートセレクト */
+/* --- 並び替え部分 --- */
+#shopping-list-header {
+  margin-bottom: 0.5rem;
+}
+
 #sort {
-    font-weight: bold;
-    font-size: 0.9rem;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 150px; /* 必要に応じて調整 */
+  color: #666;
+  font-weight: 600;
+  font-size: 0.9rem;
 }
+
+
 #sort select {
-    margin-left: 0.3rem;
-    padding: 0.25rem 0.4rem;
-    font-size: 0.85rem;
-    border-radius: 6px;
-    border: 1px solid #ccc;
+  border-radius: 6px;
+  border: 1.5px solid #ccc;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.9rem;
+  background-color: white;
+  min-width: 140px;
+  cursor: pointer;
 }
 
-/* トータル表示 */
+#sort select:focus {
+  border-color: #2a7ae2;
+  outline: none;
+  box-shadow: 0 0 6px rgba(42, 122, 226, 0.3);
+}
+
+/* --- 合計表示 --- */
 #total {
-    font-weight: bold;
-    font-size: 1.4rem;
-    color: #4c9fff;
-}
-#remaining {
-    font-size: 0.9rem;
-    opacity: 0.7;
-    margin-left: 1rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #2a7ae2;
 }
 
-/* ===== レスポンシブ ===== */
-@media (max-width: 480px) {
-    #preset-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-    #sort {
-        margin-left: 0;
-    }
-    div {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.8rem;
-    }
-    #preset-add-btn,
-    #new-preset-name,
-    #new-preset-quantity {
-        width: 100% !important;
-        max-width: 100%;
-    }
+#remaining {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #27ae60;
+}
+
+/* --- レシピ表示（プリセット編集画面） --- */
+.recipe-item {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.07);
+  margin-bottom: 1rem;
+  padding: 1rem;
+  font-size: 0.95rem;
+}
+
+.recipe-item h3 {
+  margin-top: 0;
+  margin-bottom: 0.3rem;
+  color: #2980b9;
+}
+
+.recipe-item img {
+  border-radius: 6px;
+  margin-bottom: 0.4rem;
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.recipe-item button {
+  background-color: #2980b9;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.8rem;
+  box-shadow: 0 2px 6px rgb(41 128 185 / 0.4);
+}
+
+.recipe-item button:hover,
+.recipe-item button:focus {
+  background-color: #1f5a7f;
+}
+
+/* --- レスポンシブ --- */
+@media screen and (max-width: 480px) {
+  h1 {
+    font-size: 1.3rem;
+    padding: 0.8rem;
+  }
+
+  #form {
+    flex-direction: column;
+  }
+
+  #form > input,
+  #form-add-btn {
+    width: 100%;
+  }
+
+  #budget-setting {
+    max-width: 100%;
+  }
 }

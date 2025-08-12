@@ -84,7 +84,19 @@
         </p>
     </section>
 
-    <button id="end-shopping-btn" style="background:red; color:white;">買い物終了</button>
+    <button id="end-shopping-btn" style="
+  background:red; 
+  color:white; 
+  width: 100%;     /* 横幅いっぱい */
+  padding: 0.8em 0;  /* 上下に適度な余白 */
+  font-size: 1.1rem;
+  text-align: center; /* 横方向中央 */
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+">
+        買い物終了
+    </button>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
