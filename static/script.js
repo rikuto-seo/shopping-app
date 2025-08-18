@@ -248,22 +248,6 @@ function removeItem(index) {
     updateList();
 }
 
-function createPresetButtons() {
-    const container = document.getElementById("preset-list");
-    container.innerHTML = "";
-
-    presetItems.forEach(({ name }) => {
-        const btn = document.createElement("button");
-        btn.textContent = name;
-        btn.style.margin = "0.2rem";
-        btn.onclick = () => {
-            const preset = presetItems.find(p => p.name === name);
-            startPresetInput(preset.name, preset.quantity);
-        };
-        container.appendChild(btn);
-    });
-}
-
 // プリセット商品選択時のフォーム設定（価格入力欄を隠して、名前読み取り＋個数入力可能に）
 function startPresetInput(name, quantity) {
     if (isPresetInputMode) {
@@ -490,3 +474,50 @@ function renderShoppingHistory() {
     });
 }
 
+// 事前に QuaggaJS を読み込んでいる前提
+document.getElementById('start-scanner-btn').addEventListener('click', function() {
+    const video = document.getElementById('scanner-video');
+    const message = document.getElementById('scanner-message');
+
+    // Quaggaの初期化
+    Quagga.init({
+        inputStream: {
+            name: "Live",
+            type: "LiveStream",
+            target: video,
+            constraints: {
+                facingMode: "environment" // 背面カメラ
+            }
+        },
+        decoder: {
+            readers: ["ean_reader"] // JANコード対応
+        }
+    }, function(err) {
+        if (err) {
+            console.error(err);
+            message.textContent = "カメラ起動に失敗しました";
+            return;
+        }
+        Quagga.start();
+    });
+
+    // バーコード読み取り時
+    Quagga.onDetected(function(result) {
+        const code = result.codeResult.code;
+        Quagga.stop();
+
+        // DB検索（仮：ここでは自作DBオブジェクト）
+        const db = {
+            "4901234567890": "サンプル商品A",
+            "4987654321098": "サンプル商品B"
+        };
+
+        if (db[code]) {
+            document.getElementById('name').value = db[code];
+            document.getElementById('quantity').value = 1;
+            message.textContent = "";
+        } else {
+            message.textContent = "商品が見つかりません。手入力してください";
+        }
+    });
+});

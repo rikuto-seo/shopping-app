@@ -10,5 +10,9 @@ def index():
 def setup():
     return render_template("preset.html")  # 事前準備ページ
 
+@app.route("/admin")
+def admin():
+    return render_template("admin.html")  # 商品管理ページ
+
 if __name__ == "__main__":
     app.run(debug=True)

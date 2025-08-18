@@ -6,27 +6,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>BuyList+</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-    <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <!-- ファビコン -->
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" />
-
-    <!-- Apple Touch Icon (iOS用) -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/icon-180.png') }}" />
-
-    <!-- Android用 アイコン -->
     <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='icons/icon-192.png') }}" />
     <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='icons/icon-512.png') }}" />
+
+    <!-- Firebase App (必須) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDI5HJyD3mTi67ndWrpb-tbd8c0jKOhjYg",
+            authDomain: "shopping-app-754a1.firebaseapp.com",
+            projectId: "shopping-app-754a1",
+            storageBucket: "shopping-app-754a1.appspot.com",
+            messagingSenderId: "1089983907690",
+            appId: "1:1089983907690:web:1c6be68478230362ddc713",
+            measurementId: "G-Y07NJF1SE1"
+        };
+
+        // Firebase初期化
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+
 </head>
 
 <body>
     <h1><i class="fa-solid fa-shopping-cart" style="color:#2a7ae2;"></i> 買い物リスト</h1>
 
-    <p>
-        <a href="{{ url_for('setup') }}">
-            <i class="fa-solid fa-gear"></i> 事前用意リスト
+
+
+
+    <div class="top-bar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <p>
+            <a href="{{ url_for('setup') }}">
+                <i class="fa-solid fa-pen-to-square"></i> 事前用意リストへ
+            </a>
+        </p>
+
+        <a href="/admin">
+            <button
+                style="padding: 0.5rem 1rem; background-color: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                <i class="fa-solid fa-database"></i> 商品管理へ
+            </button>
         </a>
-    </p>
+    </div>
 
     <!-- 予算切替 -->
     <div id="budget-toggle-container">
@@ -36,7 +64,6 @@
             <i id="money-icon" class="fa-solid fa-money-bill-wave" style="display:none; color:#27ae60;"></i>
         </button>
     </div>
-
 
     <div id="budget-setting" style="display:none;">
         <label for="budget"><i class="fa-solid fa-coins" style="color:#f39c12;"></i> 予算設定（円）：</label>
@@ -54,7 +81,18 @@
             <input type="number" id="quantity" placeholder="数量" value="1" min="1" />
             <button id="form-add-btn"><i class="fa-solid fa-cart-plus"></i> 追加</button>
         </div>
+        <!-- バーコードスキャン -->
+        <button id="scan-btn" style="margin-top:0.5em;"><i class="fa-solid fa-camera"></i> バーコードスキャン</button>
+        <video id="scanner" style="width:100%; display:none; margin-top:0.5em;"></video>
     </section>
+
+    <!-- admin.html モーダル -->
+    <div id="admin-modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+        <iframe id="admin-iframe" src="" style="width:90%; height:80%; border:none; border-radius:8px;"></iframe>
+        <button id="admin-close"
+            style="position:absolute; top:1rem; right:1rem; font-size:1.5rem; color:white; background:none; border:none; cursor:pointer;">&times;</button>
+    </div>
 
     <!-- 事前用意リスト -->
     <section id="preset-section" class="section-box">
@@ -62,7 +100,7 @@
         <div id="preset-list"></div>
     </section>
 
-    <!-- 買い物リストと並び替え -->
+    <!-- 買い物リスト -->
     <section id="shopping-list-section" class="section-box">
         <div id="shopping-list-header" style="display:flex; justify-content:space-between; align-items:center;">
             <h2><i class="fa-solid fa-list" style="color:#34495e;"></i> 買い物リスト</h2>
@@ -84,21 +122,64 @@
         </p>
     </section>
 
-    <button id="end-shopping-btn" style="
-  background:red; 
-  color:white; 
-  width: 100%;     /* 横幅いっぱい */
-  padding: 0.8em 0;  /* 上下に適度な余白 */
-  font-size: 1.1rem;
-  text-align: center; /* 横方向中央 */
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-">
+    <button id="end-shopping-btn"
+        style="background:red; color:white; width:100%; padding:0.8em 0; font-size:1.1rem; text-align:center; border:none; border-radius:6px; cursor:pointer;">
         買い物終了
     </button>
 
+    <!-- ZXing バーコードライブラリ -->
+    <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/umd/index.min.js"></script>
+
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        const codeReader = new ZXing.BrowserBarcodeReader();
+        const scanBtn = document.getElementById('scan-btn');
+        const video = document.getElementById('scanner');
+        const adminModal = document.getElementById('admin-modal');
+        const adminIframe = document.getElementById('admin-iframe');
+        const adminClose = document.getElementById('admin-close');
+
+        scanBtn.addEventListener('click', async () => {
+            video.style.display = 'block';
+            try {
+                const result = await codeReader.decodeOnceFromVideoDevice(undefined, 'scanner');
+                console.log('バーコード:', result.text);
+
+                // Firestoreで検索
+                const docRef = db.collection('products').doc(result.text);
+                const docSnap = await docRef.get();
+
+                if (docSnap.exists) {
+                    const data = docSnap.data();
+                    document.getElementById('name').value = data.name;
+                    document.getElementById('price').value = data.price;
+                    alert('商品を自動入力しました');
+                } else {
+                    // admin.html モーダルで登録
+                    adminIframe.src = `/admin?barcode=${result.text}`;
+                    adminModal.style.display = 'flex';
+                }
+            } catch (err) {
+                console.error(err);
+                alert('スキャンに失敗しました。手入力してください。');
+            }
+        });
+
+        adminClose.addEventListener('click', () => {
+            adminModal.style.display = 'none';
+            adminIframe.src = '';
+        });
+
+        // admin.html からのpostMessageで商品登録完了通知
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'product-registered') {
+                document.getElementById('name').value = event.data.name;
+                adminModal.style.display = 'none';
+                adminIframe.src = '';
+                alert('新商品を登録し、商品名を自動入力しました: ' + event.data.name);
+            }
+        });
+    </script>
 </body>
 
 </html>
