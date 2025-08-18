@@ -10,19 +10,18 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-        import { getFirestore, collection, doc, getDoc, setDoc, deleteDoc, onSnapshot }
-            from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
-
+        import { getFirestore, collection, doc, getDoc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
         import { BrowserMultiFormatReader, BarcodeFormat } from "https://cdn.jsdelivr.net/npm/@zxing/browser@latest/+esm";
 
+        // --- Firebase 初期化 ---
         const firebaseConfig = {
-            apiKey: "...",
-            authDomain: "...",
-            projectId: "...",
-            storageBucket: "...",
-            messagingSenderId: "...",
-            appId: "...",
-            measurementId: "..."
+            apiKey: "AIzaSyDI5HJyD3mTi67ndWrpb-tbd8c0jKOhjYg",
+            authDomain: "shopping-app-754a1.firebaseapp.com",
+            projectId: "shopping-app-754a1",
+            storageBucket: "shopping-app-754a1.appspot.com",
+            messagingSenderId: "1089983907690",
+            appId: "1:1089983907690:web:1c6be68478230362ddc713",
+            measurementId: "G-Y07NJF1SE1"
         };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -52,12 +51,10 @@
 
         const createProductItem = (productId, data) => {
             const li = document.createElement('li');
-
             const info = document.createElement('div');
             info.textContent = `${productId}: ${data.name} [カテゴリ: ${data.category || '-'} | メーカー: ${data.maker || '-'} | 内容量: ${data.volume || '-'}]`;
 
             const btnGroup = document.createElement('div');
-
             const editBtn = document.createElement('button');
             editBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
             editBtn.addEventListener('click', () => {
@@ -91,7 +88,7 @@
                 if (data.maker) makers.add(data.maker);
             });
 
-            // カテゴリ
+            // カテゴリ更新
             categorySelect.innerHTML = '<option value="">-- 選択してください --</option>';
             categories.forEach(cat => {
                 const option = document.createElement("option");
@@ -100,7 +97,7 @@
                 categorySelect.appendChild(option);
             });
 
-            // メーカー
+            // メーカー更新
             makerDatalist.innerHTML = "";
             makers.forEach(maker => {
                 const option = document.createElement("option");
@@ -158,8 +155,9 @@
         const codeReader = new BrowserMultiFormatReader();
 
         startScanBtn.addEventListener("click", async () => {
-            cameraPreview.innerHTML = ""; // 初期化
+            cameraPreview.innerHTML = ""; 
             const previewElem = document.createElement("video");
+            previewElem.style.width = "100%";
             cameraPreview.appendChild(previewElem);
 
             const devices = await BrowserMultiFormatReader.listVideoInputDevices();
@@ -170,44 +168,23 @@
 
             const backCam = devices.find(d => d.label.toLowerCase().includes("back")) || devices[0];
 
-            // 読み取り枠を小さく指定する
-            const hints = new Map();
-            hints.set(BarcodeFormat.EAN_13, true); // JANコード専用
-
-            const scanArea = {
-                x: 0.25, // 横方向25%から75%まで
-                y: 0.4,  // 縦方向40%から60%まで
-                width: 0.5,
-                height: 0.2
-            };
-
             codeReader.decodeFromVideoDevice(backCam.deviceId, previewElem, (result, err) => {
                 if (result) {
-                    console.log("Scanned:", result.getText());
                     barcodeInput.value = result.getText();
                     barcodeInput.dispatchEvent(new Event("change"));
-
-                    if (navigator.vibrate) {
-                        navigator.vibrate(200);
-                    }
-
-                    codeReader.reset(); // ストップ
+                    if (navigator.vibrate) navigator.vibrate(200);
+                    codeReader.reset();
                 }
-            }, {
-                formats: [BarcodeFormat.EAN_13],
-                // ZXing では decodeFromVideoDevice のオプションでスキャン範囲指定
-                // scanRegion を使う場合はブラウザ側で計算して video に overlay する形にする
-                // ここでは簡単に video CSS で枠を示す方法もおすすめ
-            });
+            }, { formats: [BarcodeFormat.EAN_13] });
 
-            // 視覚的に枠を表示する
+            // スキャン枠表示
             const overlay = document.createElement("div");
             overlay.style.position = "absolute";
             overlay.style.border = "2px solid red";
-            overlay.style.left = `${scanArea.x * 100}%`;
-            overlay.style.top = `${scanArea.y * 100}%`;
-            overlay.style.width = `${scanArea.width * 100}%`;
-            overlay.style.height = `${scanArea.height * 100}%`;
+            overlay.style.left = "25%";
+            overlay.style.top = "40%";
+            overlay.style.width = "50%";
+            overlay.style.height = "20%";
             overlay.style.pointerEvents = "none";
             cameraPreview.style.position = "relative";
             cameraPreview.appendChild(overlay);
@@ -229,11 +206,12 @@
         <input type="text" id="name" placeholder="商品名" />
         <select id="category"></select>
         <input list="makers" id="maker" placeholder="メーカー名" />
+        <datalist id="makers"></datalist>
         <input type="text" id="volume" placeholder="内容量" />
         <button id="add-btn"><i class="fa-solid fa-plus"></i> 登録/更新</button>
     </div>
 
-    <div id="camera-preview"></div>
+    <div id="camera-preview" style="margin-top: 20px;"></div>
 
     <h2>登録済み商品</h2>
     <ul id="product-list"></ul>
