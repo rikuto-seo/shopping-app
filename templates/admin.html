@@ -7,7 +7,8 @@
     <title>商品管理</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    <!-- ✅ html5-qrcode ライブラリ -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -43,14 +44,12 @@
         #camera-preview {
             width: 100%;
             max-width: 400px;
-            height: 300px;
-            background: #000;
-            margin-bottom: 1rem;
+            margin: 1rem 0;
         }
     </style>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-        import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, onSnapshot }
+        import { getFirestore, collection, doc, getDoc, setDoc, deleteDoc, onSnapshot }
             from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -76,6 +75,7 @@
         const startScanBtn = document.getElementById('start-scan');
         const categorySelect = document.getElementById("category");
         const makerDatalist = document.getElementById("makers");
+        const cameraPreview = document.getElementById("camera-preview");
 
         // --- Helpers ---
         const resetForm = () => {
@@ -191,61 +191,40 @@
             } else resetForm();
         });
 
-        // --- Camera Scan ---
+        // --- Camera Scan (html5-qrcode) ---
+        let html5QrcodeScanner = null;
         startScanBtn.addEventListener("click", () => {
-            Quagga.init({
-                inputStream: {
-                    name: "Live",
-                    type: "LiveStream",
-                    target: document.querySelector('#camera-preview'),
-                    constraints: {
-                        facingMode: "environment", // スマホ背面カメラ
-                        width: 640,
-                        height: 480
-                    }
-                },
-                locator: {
-                    patchSize: "medium", // 認識速度と精度のバランス
-                    halfSample: true
-                },
-                numOfWorkers: 2,
-                locate: true,
-                decoder: {
-                    readers: [
-                        "ean_reader",      // JANコード(13桁)
-                        "ean_8_reader",    // 8桁
-                        "code_128_reader"  // 独自コード系
+            cameraPreview.innerHTML = ""; // 初期化
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.clear();
+                html5QrcodeScanner = null;
+            }
+
+            html5QrcodeScanner = new Html5Qrcode("camera-preview");
+
+            html5QrcodeScanner.start(
+                { facingMode: "environment" },
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 150 },
+                    formatsToSupport: [
+                        Html5QrcodeSupportedFormats.EAN_13,
+                        Html5QrcodeSupportedFormats.EAN_8,
+                        Html5QrcodeSupportedFormats.UPC_A,
+                        Html5QrcodeSupportedFormats.CODE_128
                     ]
-                }
-            }, err => {
-                if (err) {
-                    console.error(err);
-                    return;
-                }
-                Quagga.start();
-            });
-
-            // --- 誤検出防止：3フレーム連続一致で確定 ---
-            let lastResult = null;
-            let sameResultCount = 0;
-
-            Quagga.onDetected(result => {
-                const code = result.codeResult.code;
-
-                if (lastResult === code) {
-                    sameResultCount++;
-                } else {
-                    lastResult = code;
-                    sameResultCount = 1;
-                }
-
-                if (sameResultCount >= 3) {
-                    barcodeInput.value = code;
-                    Quagga.stop();
+                },
+                (decodedText, decodedResult) => {
+                    console.log("Scanned:", decodedText);
+                    barcodeInput.value = decodedText;
                     barcodeInput.dispatchEvent(new Event("change"));
-                    lastResult = null;
-                    sameResultCount = 0;
+                    html5QrcodeScanner.stop();
+                },
+                (errorMessage) => {
+                    // console.log("読み取り失敗:", errorMessage);
                 }
+            ).catch(err => {
+                console.error("カメラ起動エラー:", err);
             });
         });
     </script>
