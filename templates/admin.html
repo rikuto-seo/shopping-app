@@ -2,254 +2,241 @@
 <html lang="ja">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>商品管理</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>商品管理</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-    #form input,
-    #form select,
-    #form button {
-      margin: 5px 0;
-      padding: 8px;
-      width: 100%;
-      max-width: 400px;
-      box-sizing: border-box;
-    }
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+        import { getFirestore, collection, doc, getDoc, setDoc, deleteDoc, onSnapshot }
+            from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-    #form button {
-      cursor: pointer;
-    }
+        import { BrowserMultiFormatReader, BarcodeFormat } from "https://cdn.jsdelivr.net/npm/@zxing/browser@latest/+esm";
 
-    #product-list li {
-      padding: 8px;
-      border-bottom: 1px solid #ccc;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        const firebaseConfig = {
+            apiKey: "...",
+            authDomain: "...",
+            projectId: "...",
+            storageBucket: "...",
+            messagingSenderId: "...",
+            appId: "...",
+            measurementId: "..."
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-    #product-list li button {
-      margin-left: 5px;
-    }
+        // --- DOM Elements ---
+        const barcodeInput = document.getElementById('barcode');
+        const nameInput = document.getElementById('name');
+        const categoryInput = document.getElementById('category');
+        const makerInput = document.getElementById('maker');
+        const volumeInput = document.getElementById('volume');
+        const addBtn = document.getElementById('add-btn');
+        const listEl = document.getElementById('product-list');
+        const startScanBtn = document.getElementById('start-scan');
+        const categorySelect = document.getElementById("category");
+        const makerDatalist = document.getElementById("makers");
+        const cameraPreview = document.getElementById("camera-preview");
 
-    #camera-preview {
-      width: 100%;
-      max-width: 400px;
-      margin: 1rem 0;
-    }
+        // --- Helpers ---
+        const resetForm = () => {
+            barcodeInput.value = "";
+            barcodeInput.disabled = false;
+            nameInput.value = "";
+            categoryInput.value = "";
+            makerInput.value = "";
+            volumeInput.value = "";
+        };
 
-    video {
-      width: 100%;
-      max-width: 400px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-  </style>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-    import { getFirestore, collection, doc, getDoc, setDoc, deleteDoc, onSnapshot }
-      from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+        const createProductItem = (productId, data) => {
+            const li = document.createElement('li');
 
-    import { BrowserMultiFormatReader, BarcodeFormat } from "https://cdn.jsdelivr.net/npm/@zxing/browser@latest/+esm";
+            const info = document.createElement('div');
+            info.textContent = `${productId}: ${data.name} [カテゴリ: ${data.category || '-'} | メーカー: ${data.maker || '-'} | 内容量: ${data.volume || '-'}]`;
 
-    const firebaseConfig = {
-      apiKey: "...",
-      authDomain: "...",
-      projectId: "...",
-      storageBucket: "...",
-      messagingSenderId: "...",
-      appId: "...",
-      measurementId: "..."
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+            const btnGroup = document.createElement('div');
 
-    // --- DOM Elements ---
-    const barcodeInput = document.getElementById('barcode');
-    const nameInput = document.getElementById('name');
-    const categoryInput = document.getElementById('category');
-    const makerInput = document.getElementById('maker');
-    const volumeInput = document.getElementById('volume');
-    const addBtn = document.getElementById('add-btn');
-    const listEl = document.getElementById('product-list');
-    const startScanBtn = document.getElementById('start-scan');
-    const categorySelect = document.getElementById("category");
-    const makerDatalist = document.getElementById("makers");
-    const cameraPreview = document.getElementById("camera-preview");
+            const editBtn = document.createElement('button');
+            editBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+            editBtn.addEventListener('click', () => {
+                barcodeInput.value = productId;
+                barcodeInput.disabled = true;
+                nameInput.value = data.name || "";
+                categoryInput.value = data.category || "";
+                makerInput.value = data.maker || "";
+                volumeInput.value = data.volume || "";
+            });
 
-    // --- Helpers ---
-    const resetForm = () => {
-      barcodeInput.value = "";
-      barcodeInput.disabled = false;
-      nameInput.value = "";
-      categoryInput.value = "";
-      makerInput.value = "";
-      volumeInput.value = "";
-    };
+            const deleteBtn = document.createElement('button');
+            deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+            deleteBtn.addEventListener('click', async () => {
+                if (confirm(`本当に ${productId} を削除しますか？`)) {
+                    await deleteDoc(doc(db, "products", productId));
+                }
+            });
 
-    const createProductItem = (productId, data) => {
-      const li = document.createElement('li');
+            btnGroup.append(editBtn, deleteBtn);
+            li.append(info, btnGroup);
+            return li;
+        };
 
-      const info = document.createElement('div');
-      info.textContent = `${productId}: ${data.name} [カテゴリ: ${data.category || '-'} | メーカー: ${data.maker || '-'} | 内容量: ${data.volume || '-'}]`;
+        const updateCategoryAndMaker = (products) => {
+            const categories = new Set();
+            const makers = new Set();
+            products.forEach(docSnap => {
+                const data = docSnap.data();
+                if (data.category) categories.add(data.category);
+                if (data.maker) makers.add(data.maker);
+            });
 
-      const btnGroup = document.createElement('div');
+            // カテゴリ
+            categorySelect.innerHTML = '<option value="">-- 選択してください --</option>';
+            categories.forEach(cat => {
+                const option = document.createElement("option");
+                option.value = cat;
+                option.textContent = cat;
+                categorySelect.appendChild(option);
+            });
 
-      const editBtn = document.createElement('button');
-      editBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
-      editBtn.addEventListener('click', () => {
-        barcodeInput.value = productId;
-        barcodeInput.disabled = true;
-        nameInput.value = data.name || "";
-        categoryInput.value = data.category || "";
-        makerInput.value = data.maker || "";
-        volumeInput.value = data.volume || "";
-      });
+            // メーカー
+            makerDatalist.innerHTML = "";
+            makers.forEach(maker => {
+                const option = document.createElement("option");
+                option.value = maker;
+                makerDatalist.appendChild(option);
+            });
+        };
 
-      const deleteBtn = document.createElement('button');
-      deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
-      deleteBtn.addEventListener('click', async () => {
-        if (confirm(`本当に ${productId} を削除しますか？`)) {
-          await deleteDoc(doc(db, "products", productId));
-        }
-      });
+        // --- Firestore リアルタイム監視 ---
+        const productsCol = collection(db, "products");
+        onSnapshot(productsCol, (snapshot) => {
+            listEl.innerHTML = "";
+            snapshot.forEach(docSnap => {
+                const li = createProductItem(docSnap.id, docSnap.data());
+                listEl.appendChild(li);
+            });
+            updateCategoryAndMaker(snapshot.docs);
+        });
 
-      btnGroup.append(editBtn, deleteBtn);
-      li.append(info, btnGroup);
-      return li;
-    };
+        // --- Add/Update Product ---
+        addBtn.addEventListener('click', async () => {
+            const barcode = barcodeInput.value.trim();
+            const name = nameInput.value.trim();
+            const category = categoryInput.value.trim();
+            const maker = makerInput.value.trim();
+            const volume = volumeInput.value.trim();
 
-    const updateCategoryAndMaker = (products) => {
-      const categories = new Set();
-      const makers = new Set();
-      products.forEach(docSnap => {
-        const data = docSnap.data();
-        if (data.category) categories.add(data.category);
-        if (data.maker) makers.add(data.maker);
-      });
+            if (!barcode || !name) {
+                alert("バーコードと商品名を入力してください");
+                return;
+            }
 
-      // カテゴリ
-      categorySelect.innerHTML = '<option value="">-- 選択してください --</option>';
-      categories.forEach(cat => {
-        const option = document.createElement("option");
-        option.value = cat;
-        option.textContent = cat;
-        categorySelect.appendChild(option);
-      });
+            await setDoc(doc(db, "products", barcode), { name, category, maker, volume });
+            window.parent.postMessage({ type: 'product-registered', barcode, name }, '*');
+            resetForm();
+        });
 
-      // メーカー
-      makerDatalist.innerHTML = "";
-      makers.forEach(maker => {
-        const option = document.createElement("option");
-        option.value = maker;
-        makerDatalist.appendChild(option);
-      });
-    };
+        // --- Barcode Auto-Fill ---
+        barcodeInput.addEventListener("change", async () => {
+            const code = barcodeInput.value.trim();
+            if (!code) return;
 
-    // --- Firestore リアルタイム監視 ---
-    const productsCol = collection(db, "products");
-    onSnapshot(productsCol, (snapshot) => {
-      listEl.innerHTML = "";
-      snapshot.forEach(docSnap => {
-        const li = createProductItem(docSnap.id, docSnap.data());
-        listEl.appendChild(li);
-      });
-      updateCategoryAndMaker(snapshot.docs);
-    });
+            const docSnap = await getDoc(doc(db, "products", code));
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                nameInput.value = data.name || "";
+                categoryInput.value = data.category || "";
+                makerInput.value = data.maker || "";
+                volumeInput.value = data.volume || "";
+                barcodeInput.disabled = true;
+            } else resetForm();
+        });
 
-    // --- Add/Update Product ---
-    addBtn.addEventListener('click', async () => {
-      const barcode = barcodeInput.value.trim();
-      const name = nameInput.value.trim();
-      const category = categoryInput.value.trim();
-      const maker = makerInput.value.trim();
-      const volume = volumeInput.value.trim();
+        // --- Camera Scan (ZXing) ---
+        const codeReader = new BrowserMultiFormatReader();
 
-      if (!barcode || !name) {
-        alert("バーコードと商品名を入力してください");
-        return;
-      }
+        startScanBtn.addEventListener("click", async () => {
+            cameraPreview.innerHTML = ""; // 初期化
+            const previewElem = document.createElement("video");
+            cameraPreview.appendChild(previewElem);
 
-      await setDoc(doc(db, "products", barcode), { name, category, maker, volume });
-      window.parent.postMessage({ type: 'product-registered', barcode, name }, '*');
-      resetForm();
-    });
+            const devices = await BrowserMultiFormatReader.listVideoInputDevices();
+            if (devices.length === 0) {
+                alert("カメラが見つかりません");
+                return;
+            }
 
-    // --- Barcode Auto-Fill ---
-    barcodeInput.addEventListener("change", async () => {
-      const code = barcodeInput.value.trim();
-      if (!code) return;
+            const backCam = devices.find(d => d.label.toLowerCase().includes("back")) || devices[0];
 
-      const docSnap = await getDoc(doc(db, "products", code));
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        nameInput.value = data.name || "";
-        categoryInput.value = data.category || "";
-        makerInput.value = data.maker || "";
-        volumeInput.value = data.volume || "";
-        barcodeInput.disabled = true;
-      } else resetForm();
-    });
+            // 読み取り枠を小さく指定する
+            const hints = new Map();
+            hints.set(BarcodeFormat.EAN_13, true); // JANコード専用
 
-    // --- Camera Scan (ZXing) ---
-    const codeReader = new BrowserMultiFormatReader();
+            const scanArea = {
+                x: 0.25, // 横方向25%から75%まで
+                y: 0.4,  // 縦方向40%から60%まで
+                width: 0.5,
+                height: 0.2
+            };
 
-    startScanBtn.addEventListener("click", async () => {
-      cameraPreview.innerHTML = ""; // 初期化
-      const previewElem = document.createElement("video");
-      cameraPreview.appendChild(previewElem);
+            codeReader.decodeFromVideoDevice(backCam.deviceId, previewElem, (result, err) => {
+                if (result) {
+                    console.log("Scanned:", result.getText());
+                    barcodeInput.value = result.getText();
+                    barcodeInput.dispatchEvent(new Event("change"));
 
-      const devices = await BrowserMultiFormatReader.listVideoInputDevices();
-      if (devices.length === 0) {
-        alert("カメラが見つかりません");
-        return;
-      }
+                    if (navigator.vibrate) {
+                        navigator.vibrate(200);
+                    }
 
-      const backCam = devices.find(d => d.label.toLowerCase().includes("back")) || devices[0];
+                    codeReader.reset(); // ストップ
+                }
+            }, {
+                formats: [BarcodeFormat.EAN_13],
+                // ZXing では decodeFromVideoDevice のオプションでスキャン範囲指定
+                // scanRegion を使う場合はブラウザ側で計算して video に overlay する形にする
+                // ここでは簡単に video CSS で枠を示す方法もおすすめ
+            });
 
-      codeReader.decodeFromVideoDevice(backCam.deviceId, previewElem, (result, err) => {
-        if (result) {
-          console.log("Scanned:", result.getText());
-          barcodeInput.value = result.getText();
-          barcodeInput.dispatchEvent(new Event("change"));
-          codeReader.reset(); // ストップ
-        }
-      }, {
-        formats: [BarcodeFormat.EAN_13] // ✅ JANコード専用
-      });
-    });
-  </script>
+            // 視覚的に枠を表示する
+            const overlay = document.createElement("div");
+            overlay.style.position = "absolute";
+            overlay.style.border = "2px solid red";
+            overlay.style.left = `${scanArea.x * 100}%`;
+            overlay.style.top = `${scanArea.y * 100}%`;
+            overlay.style.width = `${scanArea.width * 100}%`;
+            overlay.style.height = `${scanArea.height * 100}%`;
+            overlay.style.pointerEvents = "none";
+            cameraPreview.style.position = "relative";
+            cameraPreview.appendChild(overlay);
+        });
+
+    </script>
 </head>
 
 <body>
-  <h1><i class="fa-solid fa-database"></i> 商品管理</h1>
-  <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-    <p style="margin: 0;"><a href="{{ url_for('index') }}"><i class="fa-solid fa-arrow-left"></i> 買い物リストへ</a></p>
-    <p style="margin: 0;"><a href="{{ url_for('setup') }}"><i class="fa-solid fa-gear"></i> 事前用意リストへ</a></p>
-  </div>
+    <h1><i class="fa-solid fa-database"></i> 商品管理</h1>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+        <p style="margin: 0;"><a href="{{ url_for('index') }}"><i class="fa-solid fa-arrow-left"></i> 買い物リストへ</a></p>
+        <p style="margin: 0;"><a href="{{ url_for('setup') }}"><i class="fa-solid fa-gear"></i> 事前用意リストへ</a></p>
+    </div>
 
-  <div id="form">
-    <input type="text" id="barcode" placeholder="バーコード" />
-    <button id="start-scan"><i class="fa-solid fa-camera"></i> カメラで入力</button><br>
-    <input type="text" id="name" placeholder="商品名" />
-    <select id="category"></select>
-    <input list="makers" id="maker" placeholder="メーカー名" />
-    <datalist id="makers"></datalist>
-    <input type="text" id="volume" placeholder="内容量" />
-    <button id="add-btn"><i class="fa-solid fa-plus"></i> 登録/更新</button>
-  </div>
+    <div id="form">
+        <button id="start-scan"><i class="fa-solid fa-camera"></i> カメラで入力</button>
+        <input type="text" id="barcode" placeholder="JANコード" />
+        <input type="text" id="name" placeholder="商品名" />
+        <select id="category"></select>
+        <input list="makers" id="maker" placeholder="メーカー名" />
+        <input type="text" id="volume" placeholder="内容量" />
+        <button id="add-btn"><i class="fa-solid fa-plus"></i> 登録/更新</button>
+    </div>
 
-  <div id="camera-preview"></div>
+    <div id="camera-preview"></div>
 
-  <h2>登録済み商品</h2>
-  <ul id="product-list"></ul>
+    <h2>登録済み商品</h2>
+    <ul id="product-list"></ul>
 </body>
 
 </html>
