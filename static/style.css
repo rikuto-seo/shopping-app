@@ -398,3 +398,11 @@ ul {
     max-width: 100%;
   }
 }
+
+#camera-preview video {
+  max-width: 400px; /* 赤枠に近い幅に制限 */
+  width: 100%;      /* 親に合わせて可変 */
+  height: 250px;     /* 縦横比は維持 */
+  display: block;
+  margin: 0 auto;   /* 中央寄せ */
+}
