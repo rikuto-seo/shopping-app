@@ -134,6 +134,8 @@ button:disabled {
 input[type="text"],
 input[type="number"],
 input[list='makers'],
+input[type="email"],
+input[type="password"],
 select {
   font-size: 1rem;
   padding: 0.6em 0.8em;
@@ -149,6 +151,8 @@ select {
 input[type="text"]:focus,
 input[type="number"]:focus,
 input[list='makers']:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
 select:focus {
   border-color: #2a7ae2;
   outline: none;
@@ -227,9 +231,41 @@ select:focus {
 
 /* --- リスト --- */
 ul {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
+    list-style: none;
+    padding-left: 0;
+    margin: 1rem auto 2rem; /* 上下に余白を追加して中央寄せ */
+    max-width: 400px;       /* メニューの幅を制限 */
+}
+
+ul li {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 0.7rem;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+ul li a {
+    display: flex;             /* li 内で横並びに */
+    align-items: center;       /* アイコンとテキストを中央揃え */
+    gap: 0.5rem;               /* アイコンとテキストの間隔 */
+    width: 100%;               /* li 全体をカバー */
+    height: 100%;              /* li 高さもカバー */
+    text-decoration: none;     /* 下線消す */
+    color: inherit;            /* li の文字色を継承 */
+    padding: 0.8rem 1.2rem;    /* li の padding と揃える */
+    box-sizing: border-box;
+}
+
+ul li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 #list li,
@@ -406,3 +442,134 @@ ul {
   display: block;
   margin: 0 auto;   /* 中央寄せ */
 }
+
+/* ログアウトボタン */
+#logout-btn {
+    display: block;
+    background-color: #c0392b;
+    margin: 30px auto;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+}
+
+#logout-btn:hover {
+    background-color: #a93226;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+
+/* login/register form 全体 */
+form#login-form {
+    display: flex;         /* フレックスボックスを使用 */
+    flex-direction: column; /* 縦方向に並べる */
+    gap: 10px;             /* 要素間のスペース */
+    max-width: 300px;      /* フォームの幅を制限 */
+    margin: 0 auto;        /* フォームを中央揃え */
+}
+
+/* input と button をフォーム幅いっぱいにする */
+form#login-form input,
+form#login-form button {
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box; /* パディング込みで幅を100%に */
+}
+
+/* ボタンのデザイン */
+form#login-form button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+form#login-form button:hover {
+    background-color: #45a049;
+}
+
+/* register form 全体 */
+form#register-form {
+    display: flex;
+    flex-direction: column; /* 縦方向に並べる */
+    gap: 10px;             /* 各要素の間隔 */
+    max-width: 300px;      /* フォーム幅の上限 */
+    margin: 0 auto;        /* 中央揃え */
+}
+
+/* input と button の統一スタイル */
+form#register-form input,
+form#register-form button {
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ボタンのデザイン */
+form#register-form button {
+    background-color: #2196F3; /* 青色 */
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+form#register-form button:hover {
+    background-color: #1976D2; /* ホバー時の濃い青 */
+}
+
+/* h1 を中央揃えに */
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* settings form 全体 */
+form#settings-form {
+    display: flex;           /* フレックスボックスを使用 */
+    flex-direction: column;  /* 縦方向に並べる */
+    gap: 10px;               /* 要素間のスペース */
+    max-width: 300px;        /* フォームの幅を制限 */
+    margin: 0 auto;          /* フォームを中央揃え */
+}
+
+/* input と button をフォーム幅いっぱいにする */
+form#settings-form input,
+form#settings-form button {
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box; /* パディング込みで幅を100%に */
+}
+
+/* ボタンのデザイン */
+form#settings-form button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;           /* アイコンとテキストを横並びに */
+    align-items: center;
+    justify-content: center;
+    gap: 5px;                /* アイコンとテキストの間隔 */
+}
+
+form#settings-form button:hover {
+    background-color: #45a049;
+}
+
+#welcome {
+    background-color: #e3f2fd;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    color: #2a7ae2;
+    max-width: 400px;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+

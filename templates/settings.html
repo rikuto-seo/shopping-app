@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>アカウント設定</title>
+    <script type="module" src="{{ url_for('static', filename='js/settings.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+    <h1><i class="fa-solid fa-gear"></i> アカウント設定</h1>
+
+    <form id="settings-form">
+        <input type="text" id="displayName" placeholder="ユーザー名">
+        <input type="email" id="email" placeholder="メールアドレス" required>
+        <input type="password" id="current-password" placeholder="現在のパスワード" required>
+        <input type="password" id="new-password" placeholder="新しいパスワード">
+        <button type="submit"><i class="fa-solid fa-save"></i> 保存</button>
+    </form>
+
+    <!-- エラーメッセージ表示用 -->
+    <p id="error-message" style="color: red; margin-top: 10px; text-align:center;"></p>
+    <p id="success-message" style="color: green; margin-top: 10px; text-align:center;"></p>
+
+    <p style="text-align:center; margin-top:15px;">
+        <a href="{{ url_for('home') }}">ホームに戻る</a>
+    </p>
+</body>
+
+</html>

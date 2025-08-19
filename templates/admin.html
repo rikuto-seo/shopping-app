@@ -108,7 +108,7 @@
         };
 
         // --- Firestore リアルタイム監視 ---
-        const productsCol = collection(db, "products_pending");
+        const productsCol = collection(db, "products");
         onSnapshot(productsCol, (snapshot) => {
             listEl.innerHTML = "";
             snapshot.forEach(docSnap => {
@@ -234,10 +234,19 @@
 </head>
 
 <body>
-    <h1><i class="fa-solid fa-database"></i> 商品管理</h1>
+    <h1 style="display:flex; justify-content:space-between; align-items:center;">
+        <span>
+            <i class="fa-solid fa-database"></i> 商品管理
+        </span>
+        <a href="{{ url_for('home') }}" style="text-decoration:none; color:#2a7ae2; font-size:1.5rem;">
+            <i class="fa-solid fa-house"></i>
+        </a>
+    </h1>
+
     <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-        <p style="margin: 0;"><a href="{{ url_for('index') }}"><i class="fa-solid fa-arrow-left"></i> 買い物リストへ</a></p>
-        <p style="margin: 0;"><a href="{{ url_for('setup') }}"><i class="fa-solid fa-gear"></i> 事前用意リストへ</a></p>
+        <p style="margin: 0;"><a href="{{ url_for('index') }}"><i class="fa-solid fa-shopping-cart" style="color:#2a7ae2;"></i> 買い物リストへ</a></p>
+        <p style="margin: 0;"><a href="{{ url_for('preset') }}"><i class="fa-solid fa-pen-to-square"></i> 事前用意リストへ</a>
+        </p>
     </div>
 
     <div id="form">

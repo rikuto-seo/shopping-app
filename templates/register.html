@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>新規登録</title>
+    <script type="module" src="{{ url_for('static', filename='js/register.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+    <h1><i class="fa-solid fa-user-plus"></i> 新規登録</h1>
+    <form id="register-form">
+        <input type="text" id="displayName" placeholder="ユーザー名">
+        <input type="email" id="email" placeholder="メールアドレス" required>
+        <input type="password" id="password" placeholder="パスワード" required>
+        <button type="submit"><i class="fa-solid fa-user-plus"></i> 登録</button>
+    </form>
+
+    <!-- エラーメッセージ表示用 -->
+    <p id="error-message" style="color: red; margin-top: 10px; text-align:center;"></p>
+
+    <p style="text-align:center; margin-top:15px;">
+        すでにアカウントを持っていますか？ <a href="{{ url_for('login') }}">ログイン</a>
+    </p>
+</body>
+
+</html>
