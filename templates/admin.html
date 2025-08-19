@@ -11,7 +11,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
         import { getFirestore, collection, doc, getDoc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
-        import { BrowserMultiFormatReader, BarcodeFormat } from "https://cdn.jsdelivr.net/npm/@zxing/browser@latest/+esm";
+        import { BrowserMultiFormatReader, BarcodeFormat } from "https://esm.sh/@zxing/browser@0.1.5";
+
 
         // --- Firebase 初期化 ---
         const firebaseConfig = {
