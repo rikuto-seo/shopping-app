@@ -108,7 +108,7 @@
         };
 
         // --- Firestore リアルタイム監視 ---
-        const productsCol = collection(db, "products");
+        const productsCol = collection(db, "products_pending");
         onSnapshot(productsCol, (snapshot) => {
             listEl.innerHTML = "";
             snapshot.forEach(docSnap => {
@@ -131,7 +131,13 @@
                 return;
             }
 
-            await setDoc(doc(db, "products", barcode), { name, category, maker, volume });
+            await setDoc(doc(db, "products_pending", barcode), {
+                name, category, maker, volume,
+                submittedAt: new Date(),
+                submittedBy: (firebaseAuth.currentUser?.uid || "anonymous"),
+                approved: false
+            });
+
             window.parent.postMessage({ type: 'product-registered', barcode, name }, '*');
             resetForm();
         });
